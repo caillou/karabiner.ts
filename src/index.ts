@@ -1,31 +1,46 @@
-import { ifApp, map, rule, withModifier, writeToProfile } from 'karabiner.ts'
+import {
+  ifApp,
+  map,
+  ModifierKeyCode,
+  ModifierParam,
+  rule,
+  withModifier,
+  writeToProfile,
+} from 'karabiner.ts'
+
+const layer = (modifier: ModifierParam) =>
+  withModifier(
+    modifier,
+    'any',
+  )([
+    map('j').to('left_arrow'),
+    map('k').to('down_arrow'),
+    map('l').to('right_arrow'),
+    map('i').to('up_arrow'),
+    map('h').to('delete_or_backspace'),
+    map('u').to('[', ['left_command', 'left_shift']),
+    map('o').to(']', ['left_command', 'left_shift']),
+    map('v').to('v', ['left_control', 'left_option']),
+  ])
+
+const ifRemoteDesktop = ifApp('^com.microsoft.rdc.macos$')
 
 writeToProfile('caillou', [
-  rule('Right ⌘ layer').manipulators([
-    withModifier(
-      { right: '⌘' },
-      'any',
-    )([
-      map('j').to('left_arrow'),
-      map('k').to('down_arrow'),
-      map('l').to('right_arrow'),
-      map('i').to('up_arrow'),
-      map('h').to('delete_or_backspace'),
-      map('u').to('[', ['left_command', 'left_shift']),
-      map('o').to(']', ['left_command', 'left_shift']),
-      map('v').to('v', ['left_control', 'left_option']),
-    ]),
+  rule('Right ⌘ layer', ifRemoteDesktop.unless()).manipulators([
+    layer({ right: '⌘' }),
   ]),
 
-  rule('Remote Desktop', ifApp('^com.microsoft.rdc.mac$')).manipulators([
-    map('left_command').to('left_control'),
-    map('left_control').to('left_command'),
+  rule('Remote Desktop', ifRemoteDesktop).manipulators([
+    map('left_command', null, 'any').to('left_control'),
+    map('right_command', null, 'any').to('right_control'),
+    map('left_control', null, 'any').to('left_command'),
     withModifier('left_control')([map('tab').to('tab', ['left_command'])]),
     // Command + Option + i opens dev tools.
-    map('i', ['left_command', 'left_option']).to('i', [
+    map('i', ['left_control', 'left_option']).to('i', [
       'left_shift',
       'left_control',
     ]),
+    layer('right_control'),
   ]),
 
   rule('CAPS_LOCK to esc/control').manipulators([
