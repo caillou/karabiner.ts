@@ -1,35 +1,56 @@
-import {
-  ifApp,
-  ifVar,
-  layer,
-  map,
-  mapDoubleTap,
-  NumberKeyValue,
-  rule,
-  simlayer,
-  withCondition,
-  withMapper,
-  writeToProfile,
-} from 'karabiner.ts'
+import { ifApp, map, rule, withModifier, writeToProfile } from 'karabiner.ts'
 
-// ! Change '--dry-run' to your Karabiner-Elements Profile name.
-// (--dry-run print the config json into console)
-// + Create a new profile if needed.
 writeToProfile('caillou', [
-  // It is not required, but recommended to put symbol alias to layers,
-  // to make it easier to write '←' instead of 'left_arrow'.
-  // Supported alias: https://github.com/evan-liu/karabiner.ts/blob/main/src/utils/key-alias.ts
-  layer('/', 'symbol-mode').manipulators([
-    //     / + [ 1    2    3    4    5 ] =>
-    withMapper(['⌘', '⌥', '⌃', '⇧', '⇪'])((k, i) =>
-      map((i + 1) as NumberKeyValue).toPaste(k),
-    ),
-    withMapper(['←', '→', '↑', '↓', '␣', '⏎', '⇥', '⎋', '⌫', '⌦', '⇪'])((k) =>
-      map(k).toPaste(k),
-    ),
+  rule('Right ⌘ layer').manipulators([
+    withModifier(
+      { right: '⌘' },
+      'any',
+    )([
+      map('j').to('left_arrow'),
+      map('k').to('down_arrow'),
+      map('l').to('right_arrow'),
+      map('i').to('up_arrow'),
+      map('h').to('delete_or_backspace'),
+      map('u').to('[', ['left_command', 'left_shift']),
+      map('o').to(']', ['left_command', 'left_shift']),
+      map('v').to('v', ['left_control', 'left_option']),
+    ]),
   ]),
 
-  // If you type fast, use simlayer instead, see https://github.com/yqrashawn/GokuRakuJoudo/blob/master/tutorial.md#simlayers
+  rule('Remote Desktop', ifApp('^com.microsoft.rdc.mac$')).manipulators([
+    map('left_command').to('left_control'),
+    map('left_control').to('left_command'),
+    withModifier('left_control')([map('tab').to('tab', ['left_command'])]),
+    // Command + Option + i opens dev tools.
+    map('i', ['left_command', 'left_option']).to('i', [
+      'left_shift',
+      'left_control',
+    ]),
+  ]),
+
+  rule('CAPS_LOCK to esc/control').manipulators([
+    map('caps_lock', null, 'any').to('left_control').toIfAlone('escape'),
+  ]),
+])
+
+/*
+Karabiner-Elements profile parameters can also be set by the 3rd parameter
+of writeToProfile('profileName', [ rules ], { params }). The default values are:
+
+// Karabiner-Elements parameters
+'basic.to_if_alone_timeout_milliseconds': 1000,
+'basic.to_if_held_down_threshold_milliseconds': 500,
+'basic.to_delayed_action_delay_milliseconds': 500,
+'basic.simultaneous_threshold_milliseconds': 50,
+'mouse_motion_to_scroll.speed': 100,
+
+// karabiner.ts only parameters
+//   for simlayer()
+'simlayer.threshold_milliseconds': 200
+//   for mapDoubleTap()
+'double_tap.delay_milliseconds': 200,
+
+// If you type fast, use simlayer instead, see https://github.com/yqrashawn/GokuRakuJoudo/blob/master/tutorial.md#simlayers
   simlayer('z', 'emoji-mode').manipulators([
     map('m').toPaste('🔀'), // Merge branches
   ]),
@@ -109,23 +130,5 @@ writeToProfile('caillou', [
     // And some others like double-tap
     mapDoubleTap(1).to('w', '⌘'),
   ]),
-])
-
-/*
-Karabiner-Elements profile parameters can also be set by the 3rd parameter
-of writeToProfile('profileName', [ rules ], { params }). The default values are:
-
-// Karabiner-Elements parameters
-'basic.to_if_alone_timeout_milliseconds': 1000,
-'basic.to_if_held_down_threshold_milliseconds': 500,
-'basic.to_delayed_action_delay_milliseconds': 500,
-'basic.simultaneous_threshold_milliseconds': 50,
-'mouse_motion_to_scroll.speed': 100,
-
-// karabiner.ts only parameters
-//   for simlayer()
-'simlayer.threshold_milliseconds': 200
-//   for mapDoubleTap()
-'double_tap.delay_milliseconds': 200,
 
  */
