@@ -15,7 +15,7 @@ import {
 // ! Change '--dry-run' to your Karabiner-Elements Profile name.
 // (--dry-run print the config json into console)
 // + Create a new profile if needed.
-writeToProfile('--dry-run', [
+writeToProfile('caillou', [
   // It is not required, but recommended to put symbol alias to layers,
   // to make it easier to write '←' instead of 'left_arrow'.
   // Supported alias: https://github.com/evan-liu/karabiner.ts/blob/main/src/utils/key-alias.ts
