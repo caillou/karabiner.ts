@@ -1,7 +1,6 @@
 import {
   ifApp,
   map,
-  ModifierKeyCode,
   ModifierParam,
   rule,
   withModifier,
@@ -29,11 +28,18 @@ writeToProfile('caillou', [
   rule('Right ⌘ layer', ifRemoteDesktop.unless()).manipulators([
     layer({ right: '⌘' }),
   ]),
+  rule('CAPS_LOCK to esc/control', ifRemoteDesktop.unless()).manipulators([
+    map('caps_lock', null, 'any').to('left_control').toIfAlone('escape'),
+  ]),
 
   rule('Remote Desktop', ifRemoteDesktop).manipulators([
     map('left_command', null, 'any').to('left_control'),
     map('right_command', null, 'any').to('right_control'),
     map('left_control', null, 'any').to('left_command'),
+    map('4', ['left_control', 'left_shift']).to('4', [
+      'left_command',
+      'left_shift',
+    ]),
     withModifier('left_control')([map('tab').to('tab', ['left_command'])]),
     // Command + Option + i opens dev tools.
     map('i', ['left_control', 'left_option']).to('i', [
@@ -41,10 +47,7 @@ writeToProfile('caillou', [
       'left_control',
     ]),
     layer('right_control'),
-  ]),
-
-  rule('CAPS_LOCK to esc/control').manipulators([
-    map('caps_lock', null, 'any').to('left_control').toIfAlone('escape'),
+    map('caps_lock', null, 'any').to('left_command').toIfAlone('escape'),
   ]),
 ])
 
