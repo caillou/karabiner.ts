@@ -22,7 +22,9 @@ const layer = (modifier: ModifierParam) =>
     map('v').to('v', ['left_control', 'left_option']),
   ])
 
-const ifRemoteDesktop = ifApp('^com.microsoft.rdc.macos$')
+const ifRemoteDesktop = ifApp(
+  '^(com.microsoft.rdc.macos)|(com.p5sys.jump.mac.)',
+)
 
 writeToProfile('caillou', [
   rule('Right ⌘ layer', ifRemoteDesktop.unless()).manipulators([
