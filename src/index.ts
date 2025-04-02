@@ -30,6 +30,11 @@ writeToProfile('caillou', [
   rule('Right ⌘ layer', ifRemoteDesktop.unless()).manipulators([
     layer({ right: '⌘' }),
   ]),
+  rule('Right ⌥ layer').manipulators([
+    withModifier('right_option')([
+      map('v').to('v', ['left_control', 'left_option']),
+    ]),
+  ]),
   rule('CAPS_LOCK to esc/control', ifRemoteDesktop.unless()).manipulators([
     map('caps_lock', null, 'any').to('left_control').toIfAlone('escape'),
   ]),
@@ -50,6 +55,7 @@ writeToProfile('caillou', [
     ]),
     layer('right_control'),
     map('caps_lock', null, 'any').to('left_command').toIfAlone('escape'),
+    // map('left_arrow', ['left_control'], 'any').to('home'),
   ]),
 ])
 
