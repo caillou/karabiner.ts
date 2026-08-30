@@ -4,11 +4,28 @@ import {
   map,
   ModifierParam,
   rule,
+  ToKeyParam,
   withModifier,
   writeToProfile,
 } from 'karabiner.ts'
 
-const navKeys = (modifier: ModifierParam) =>
+type Shortcut = [ToKeyParam, ModifierParam?]
+
+const macTabs = {
+  prevTab: ['[', ['left_command', 'left_shift']] as Shortcut,
+  nextTab: [']', ['left_command', 'left_shift']] as Shortcut,
+}
+
+// `to` output is not re-remapped, so these reach Windows as Ctrl(+Shift)+Tab.
+const windowsTabs = {
+  prevTab: ['tab', ['left_control', 'left_shift']] as Shortcut,
+  nextTab: ['tab', 'left_control'] as Shortcut,
+}
+
+const navKeys = (
+  modifier: ModifierParam,
+  { prevTab, nextTab }: { prevTab: Shortcut; nextTab: Shortcut },
+) =>
   withModifier(
     modifier,
     'any',
@@ -18,8 +35,8 @@ const navKeys = (modifier: ModifierParam) =>
     map('l').to('right_arrow'),
     map('i').to('up_arrow'),
     map('h').to('delete_or_backspace'),
-    map('u').to('[', ['left_command', 'left_shift']),
-    map('o').to(']', ['left_command', 'left_shift']),
+    map('u').to(...prevTab),
+    map('o').to(...nextTab),
     map('v').to('v', ['left_control', 'left_option']),
   ])
 
@@ -29,7 +46,7 @@ const ifRemoteDesktop = ifApp(
 
 writeToProfile('caillou', [
   rule('Right ⌘ layer', ifRemoteDesktop.unless()).manipulators([
-    navKeys({ right: '⌘' }),
+    navKeys({ right: '⌘' }, macTabs),
   ]),
   rule('Right ⌥ layer').manipulators([
     withModifier('right_option')([
@@ -58,7 +75,7 @@ writeToProfile('caillou', [
     // ⌃← from the layer would never hit the Home/End rules below.
     map('j', ['left_control', 'right_control'], 'any').to('home'),
     map('l', ['left_control', 'right_control'], 'any').to('end'),
-    navKeys('right_control'),
+    navKeys('right_control', windowsTabs),
     // Physical ⌘ is already control here, so ⌘← / ⌘→ become Home / End.
     map('left_arrow', 'control', 'any').to('home'),
     map('right_arrow', 'control', 'any').to('end'),
