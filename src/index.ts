@@ -1,5 +1,6 @@
 import {
   ifApp,
+  layer,
   map,
   ModifierParam,
   rule,
@@ -7,7 +8,7 @@ import {
   writeToProfile,
 } from 'karabiner.ts'
 
-const layer = (modifier: ModifierParam) =>
+const navKeys = (modifier: ModifierParam) =>
   withModifier(
     modifier,
     'any',
@@ -28,7 +29,7 @@ const ifRemoteDesktop = ifApp(
 
 writeToProfile('caillou', [
   rule('Right ⌘ layer', ifRemoteDesktop.unless()).manipulators([
-    layer({ right: '⌘' }),
+    navKeys({ right: '⌘' }),
   ]),
   rule('Right ⌥ layer').manipulators([
     withModifier('right_option')([
@@ -57,12 +58,22 @@ writeToProfile('caillou', [
     // ⌃← from the layer would never hit the Home/End rules below.
     map('j', ['left_control', 'right_control'], 'any').to('home'),
     map('l', ['left_control', 'right_control'], 'any').to('end'),
-    layer('right_control'),
-    map('caps_lock', null, 'any').to('left_command').toIfAlone('escape'),
+    navKeys('right_control'),
     // Physical ⌘ is already control here, so ⌘← / ⌘→ become Home / End.
     map('left_arrow', 'control', 'any').to('home'),
     map('right_arrow', 'control', 'any').to('end'),
   ]),
+
+  // In RDP caps lock is a pure layer: nothing reaches Windows while held
+  // (a real modifier would be forwarded as the Windows key), esc on tap.
+  layer('caps_lock', 'caps-rdp')
+    .condition(ifRemoteDesktop)
+    .configKey((v) => v.toIfAlone('escape'), true)
+    .manipulators([
+      // emacs line start/end; Windows has no ⌃A/⌃E, so send the literal keys
+      map('a', null, 'any').to('home'),
+      map('e', null, 'any').to('end'),
+    ]),
 ])
 
 /*
