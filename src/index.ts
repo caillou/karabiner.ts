@@ -53,9 +53,15 @@ writeToProfile('caillou', [
       'left_shift',
       'left_control',
     ]),
+    // Both ⌘ (= both ⌃ here) + j/l: layer output isn't re-manipulated, so
+    // ⌃← from the layer would never hit the Home/End rules below.
+    map('j', ['left_control', 'right_control'], 'any').to('home'),
+    map('l', ['left_control', 'right_control'], 'any').to('end'),
     layer('right_control'),
     map('caps_lock', null, 'any').to('left_command').toIfAlone('escape'),
-    // map('left_arrow', ['left_control'], 'any').to('home'),
+    // Physical ⌘ is already control here, so ⌘← / ⌘→ become Home / End.
+    map('left_arrow', 'control', 'any').to('home'),
+    map('right_arrow', 'control', 'any').to('end'),
   ]),
 ])
 
