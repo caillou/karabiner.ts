@@ -1,6 +1,6 @@
 import {
   ifApp,
-  layer,
+  ifVar,
   map,
   ModifierParam,
   rule,
@@ -44,6 +44,8 @@ const ifRemoteDesktop = ifApp(
   '^(com.microsoft.rdc.macos)|(com.p5sys.jump.mac.)',
 )
 
+const ifCaps = ifVar('caps-ctrl')
+
 writeToProfile('caillou', [
   rule('Right ⌘ layer', ifRemoteDesktop.unless()).manipulators([
     navKeys({ right: '⌘' }, macTabs),
@@ -65,7 +67,13 @@ writeToProfile('caillou', [
       'left_command',
       'left_shift',
     ]),
-    withModifier('left_control')([map('tab').to('tab', ['left_command'])]),
+    withModifier('left_control')([
+      map('tab').to('tab', ['left_command']).condition(ifCaps.unless()),
+    ]),
+    // ⌘q stays ⌘q: quits the client. ctrl+q for Windows is on caps+q.
+    map('q', 'left_control', 'any')
+      .condition(ifCaps.unless())
+      .to('q', 'left_command'),
     // Command + Option + i opens dev tools.
     map('i', ['left_control', 'left_option']).to('i', [
       'left_shift',
@@ -79,20 +87,16 @@ writeToProfile('caillou', [
     // Physical ⌘ is already control here, so ⌘← / ⌘→ become Home / End.
     map('left_arrow', 'control', 'any').to('home'),
     map('right_arrow', 'control', 'any').to('end'),
+    // caps = ⌃ like on the mac, but it also sets a variable so a/e can
+    // become home/end without swallowing ⌘a/⌘e (⌘ is ⌃ here as well).
+    map('caps_lock', null, 'any')
+      .toVar('caps-ctrl', 1, 0)
+      .to('left_control')
+      .toIfAlone('escape'),
+    map('a', '⌃', 'any').condition(ifCaps).to('home'),
+    map('e', '⌃', 'any').condition(ifCaps).to('end'),
   ]),
 
-  // In RDP caps lock is a pure layer: nothing reaches Windows while held
-  // (a real modifier would be forwarded as the Windows key), esc on tap.
-  layer('caps_lock', 'caps-rdp')
-    .modifiers(null, 'any')
-    .condition(ifRemoteDesktop)
-    .configKey((v) => v.toIfAlone('escape'), true)
-    .manipulators([
-      // emacs line start/end; Windows has no ⌃A/⌃E, so send the literal keys
-      map('a', null, 'any').to('home'),
-      map('e', null, 'any').to('end'),
-      map('c', null, 'any').to('c', 'left_control'),
-    ]),
 ])
 
 /*
