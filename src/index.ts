@@ -84,12 +84,14 @@ writeToProfile('caillou', [
   // In RDP caps lock is a pure layer: nothing reaches Windows while held
   // (a real modifier would be forwarded as the Windows key), esc on tap.
   layer('caps_lock', 'caps-rdp')
+    .modifiers(null, 'any')
     .condition(ifRemoteDesktop)
     .configKey((v) => v.toIfAlone('escape'), true)
     .manipulators([
       // emacs line start/end; Windows has no ⌃A/⌃E, so send the literal keys
       map('a', null, 'any').to('home'),
       map('e', null, 'any').to('end'),
+      map('c', null, 'any').to('c', 'left_control'),
     ]),
 ])
 
