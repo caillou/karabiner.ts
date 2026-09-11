@@ -46,7 +46,7 @@ const ifRemoteDesktop = ifApp(
 
 const ifCaps = ifVar('caps-ctrl')
 
-writeToProfile('caillou', [
+writeToProfile('Default profile', [
   rule('Right ⌘ layer', ifRemoteDesktop.unless()).manipulators([
     navKeys({ right: '⌘' }, macTabs),
   ]),
