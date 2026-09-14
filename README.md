@@ -1,3 +1,7 @@
+This repository is archived and no longer maintained here. Its content now lives in
+[caillou/dotfiles](https://github.com/caillou/dotfiles), where the Karabiner rules
+are kept under `.karabiner/`.
+
 # Using karabiner.ts
 
 This is the examples/starter repo to get started with [karabiner.ts](https://github.com/evan-liu/karabiner.ts) for [Karabiner-Elements](https://github.com/pqrs-org/Karabiner-Elements) config: 
